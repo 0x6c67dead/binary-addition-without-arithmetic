@@ -20,8 +20,18 @@ def test_binary_array(binary_array):
 def is_binary(value):
     return value in ("0", "1")
 
+def binary_array_to_decimal(binary_array):
+    binary_array.reverse()
+    decimal_value = 0
+    for index, bit in enumerate(binary_array):
+        if bit == "1":
+            decimal_value += 2**index
+    return decimal_value 
+
+
 def main():
     test_binary_array(binary_array_1)
     test_binary_array(binary_array_2)
+    print(binary_array_to_decimal(binary_array_1))
 
 main()
