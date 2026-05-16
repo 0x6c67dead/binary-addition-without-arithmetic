@@ -11,6 +11,8 @@ Imagine que temos uma soma simples de 5 + 3, em binário teremos a soma de 0101 
  - Primeiro Teremos que receber os valores propóstos pelo usuário. Pensei em utilizar dentro do próprio código com input, mas fiquei a vontade em colocar como args que fica algo mais fácil para eu testar direto da CLI.
  - Depois de receber valores da CLI com argparse (usando sem argumentos para sempre pegálos como string), tive que transformar no type list (isso vai me garantir facilidade em validar se são binários, em inverter a ordem para loops e etc) e validar se as duas strings são penas compostas por 0s e 1s.
  - Já validado, agora parti para uma feature que achei interessante emm talvez ter na hora de mostrar o resultado, a binary_array_to_decimal faz o trabalho de inverter esse array e gerar um loop onde se o valor da lista for = a "1", então somamos à variável decimal_value o valor de 2^ ao valor do indexdo loop.
+ - Antes de fazer a função binary_sum (função que vai afzer a lógica de soma sem operador aritmético), vi a necessidade de criar uma função onde vai garantir que o length dos dois binários fiquem equivalentes. Por que? imagino que ao tentar fazer a soma e eu vá ter que comparar cada valor de um array com o outro (array pq foi a forma que resolvi para separar cada "bit"). Assim nasceu a função make_binary_arrays_has_the_same_length
+ - Tive que consertar a função de binary_array_to_decimal pois ela não estava dando .reverse() no array antes de sair da função. Isso aconteceu pq imaginei que o reverse() apenas iria ser mantido dentro do escopo da função, mas não, aparentemente ele altera a variável em si em todos os escopos.
  -
 
 
