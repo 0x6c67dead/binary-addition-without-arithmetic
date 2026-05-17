@@ -1,20 +1,226 @@
-# Pensamentos, Ideia, Linhas de racicínio
+# Pensamentos, Ideia, Linhas de Raciocínio
 
 ## Ideia do mini projeto
-Estudando sobre como realmente funcionam memórias e o computador em si(estudo esse voltado para pwn, acredito ser um processo que deva ser passado se você queira entender o tão baixo nível de um computador), me passou uma questão que nunca tinha parado realmente para pensar. Isso aconteceu enquanto eu voltava a revisar sobre portas lógicas. A questão é a seguinte, soma de binários, operações básicas em geral feitas por computadores, não são feitas exatamente como uma soma comum, por se tratarem de binários n precisamos, e nem usamos, operadores matemáticos como o +.
 
-#### E como isso é Possível?
-Imagine que temos uma soma simples de 5 + 3, em binário teremos a soma de 0101 + 0011, para fazer essa soma nada mais que precisamos é uma variável para guardar o carry (valor costumeiramente chamado de "vai um" na soma decimal do dia a dia) e usar o operador lógico XOR ("ou" exclusivo, quando apenas será considerado True quando apenas um dos valores forem True). Imagine que vamos da direita para esquerda comparar cada valor usando o operador XOR, quando tivermos 1 e 1, como iremos ter no primeiro bit de 5 e 3, vamos ter o valor 0 como resposta e definidir o valor de carry como um bit (o "vai um"), no próximo bit teremos 1 bit na carry, 1 bit no 3 e 0 bit no 5, sendo assim iremos usar o XOR no bit do 3 e do 5, sendo 1 \(\oplus \) 0, resultando em True. Então retornaremos 1 na resposta? não. Lembra do nosso carry que também guarda 1 bit? após o resultado de 1 \(\oplus \) 0 nós teremos que pegar o resultado (True ou 1) e usar o XOR com o valor guardado no carry, sendo a mesma questão dos primeiros bits, resultando em 0 (por ser um XOR de 1 bit com 1 bit) e continuamos a guardar 1 bit no carry. Até agora temos o resultado 00, Vamos passar para o 3º bit da soma, onde teremos 1 bit do 5, 0 bit do 3 e 1 bit no carry. Reparou como temos O mesmo comparativo dos bits anteriores? Então vamos adiantar que esse também vai retornar 0 e guardaremos 1 no carry, Ficando por agora o resultado 000. Vamos para o último bit? teremos um caso diferente agora, teremos o bit 0 tanto vindo do 5(0101), quanto do 3(0011), vamos ter então um resultado parecido(não igual) ao primeiro bit de cada valor que comparamos, onde tinhamos 1 bit para cada lado, a diferença é que em respostas False de XOR com 1 bit sendo comparado com 1 bit, vamos adicionar 1 bit na carry, já se formos comparar 0 \(\oplus \) 0, não termos que adicionar 1 bit no carry. E lembra que temos 1 bit ainda no carry? com o resultado de 0 vindo do 0 \(\oplus \) 0, vamos fazer o próximo comparativo com o 1 guardado dentro do carry, tendo 1 (vindo do carry) \(\oplus \) 0 (vindo do resultado da soma), isso resultará no resultado 1. Agora juntando tudo teremos o resultado final como 1000, que é o binário referente a 8 em decimal.
+Estudando sobre como realmente funcionam memórias e o computador em si (estudo esse mais voltado para PWN, já que acredito ser um processo importante para quem quer entender o quão baixo nível um computador realmente é), me passou uma questão que nunca tinha parado realmente para pensar. Isso aconteceu enquanto eu voltava a revisar sobre portas lógicas.
+
+A questão é a seguinte: somas binárias e operações básicas feitas por computadores não são realizadas exatamente como uma soma comum do dia a dia. Por se tratarem de binários, não precisamos — e nem usamos diretamente — operadores aritméticos como o `+`.
+
+---
+
+## E como isso é possível?
+
+Imagine que temos uma soma simples:
+
+```text
+5 + 3
+```
+
+Em binário, teremos:
+
+```text
+0101 + 0011
+```
+
+Para fazer essa soma, basicamente precisamos de:
+
+* uma variável para guardar o carry (o famoso “vai um” da matemática tradicional);
+* e operações lógicas, principalmente o operador XOR (`⊕`).
+
+O XOR (“OU exclusivo”) retorna `True` apenas quando os dois valores comparados são diferentes.
+
+### Tabela verdade do XOR
+
+| A | B | A ⊕ B |
+| - | - | ----- |
+| 0 | 0 | 0     |
+| 0 | 1 | 1     |
+| 1 | 0 | 1     |
+| 1 | 1 | 0     |
+
+---
+
+Agora imagine que vamos comparar os bits da direita para a esquerda.
+
+Temos:
+
+```text
+0101
+0011
+```
+
+### Primeiro bit
+
+```text
+1 ⊕ 1 = 0
+```
+
+Como tivemos `1` e `1`, o resultado será `0`, mas geramos um carry (`vai um`).
+
+Resultado atual:
+
+```text
+0
+```
+
+Carry:
+
+```text
+1
+```
+
+---
+
+### Segundo bit
+
+Agora temos:
+
+* `0` vindo do primeiro número;
+* `1` vindo do segundo número;
+* e `1` vindo do carry.
+
+Primeiro fazemos:
+
+```text
+1 ⊕ 0 = 1
+```
+
+Mas ainda precisamos considerar o carry:
+
+```text
+1 ⊕ 1 = 0
+```
+
+Então o resultado final desse bit continua sendo `0`, e ainda mantemos `1` no carry.
+
+Resultado atual:
+
+```text
+00
+```
+
+Carry:
+
+```text
+1
+```
+
+---
+
+### Terceiro bit
+
+Agora temos novamente:
+
+* `1` do primeiro número;
+* `0` do segundo;
+* `1` no carry.
+
+Ou seja, exatamente o mesmo cenário anterior.
+
+Resultado:
+
+```text
+0
+```
+
+E continuamos com carry `1`.
+
+Resultado atual:
+
+```text
+000
+```
+
+---
+
+### Último bit
+
+Agora temos:
+
+```text
+0 ⊕ 0 = 0
+```
+
+Diferente do caso `1 ⊕ 1`, aqui não geramos novo carry.
+
+Mas ainda existe o carry anterior guardado.
+
+Então fazemos:
+
+```text
+1 ⊕ 0 = 1
+```
+
+Resultado final:
+
+```text
+1000
+```
+
+Que representa `8` em decimal.
+
+---
 
 ## Montando o código
 
- - Primeiro Teremos que receber os valores propóstos pelo usuário. Pensei em utilizar dentro do próprio código com input, mas fiquei a vontade em colocar como args que fica algo mais fácil para eu testar direto da CLI.
- - Depois de receber valores da CLI com argparse (usando sem argumentos para sempre pegálos como string), tive que transformar no type list (isso vai me garantir facilidade em validar se são binários, em inverter a ordem para loops e etc) e validar se as duas strings são penas compostas por 0s e 1s.
- - Já validado, agora parti para uma feature que achei interessante emm talvez ter na hora de mostrar o resultado, a binary_array_to_decimal faz o trabalho de inverter esse array e gerar um loop onde se o valor da lista for = a "1", então somamos à variável decimal_value o valor de 2^ ao valor do indexdo loop.
- - Antes de fazer a função binary_sum (função que vai afzer a lógica de soma sem operador aritmético), vi a necessidade de criar uma função onde vai garantir que o length dos dois binários fiquem equivalentes. Por que? imagino que ao tentar fazer a soma e eu vá ter que comparar cada valor de um array com o outro (array pq foi a forma que resolvi para separar cada "bit"). Assim nasceu a função make_binary_arrays_has_the_same_length
- - Tive que consertar a função de binary_array_to_decimal pois ela não estava dando .reverse() no array antes de sair da função. Isso aconteceu pq imaginei que o reverse() apenas iria ser mantido dentro do escopo da função, mas não, aparentemente ele altera a variável em si em todos os escopos.
- - Durante a criação da função binary_sum percebi que a função make_binary_arrays_has_the_same_length deveria também garantir que os dois binários iniciassem com 0, para somas como 0b111 + 0b111 n darem erro já que vou usar for com o tamanho do binário, ent para previnir adicionei um 0 nos dois binários caso comecem com 1, cobrindo possíveis erros já que 0b0111 + 0b0111 = 0b1110, tendo assim o mesmo length tanto os valores somados quanto a resposta 
- - A lógica por trás do binary_sum foi explicada acima em "como isso funciona"
- - Um bug de lógica foram encontrados dentro da função make_binary_arrays_has_the_same_length. Ele foi encontrado quando percebi que sempre que os dois "números" tinham tamanhos diferentes e um deles tivesse o bit 1 no final. Ex: primeiro bit(menor): 0101, segundo bit(maior): 11011. O bug acontecia por causa que a llógica que adicionava um bit 0 no final dos dois arrays de bits, caso o valor maior terminasse em o bit 1 não estava revertendo o array de bit maior para dar o append("0"), fazendo com qu eo valor de 11011, como o do exemplo, se tornar 110110 e não 011011.
- - Erro de sintaxe tb foi corrigido dentro da função binary_sum, que acabava por comparar o bit (valor para representar o elemento atual da lista dentro do loop foreach) com 0(número) e não "0"(string)
+* Primeiro precisamos receber os valores propostos pelo usuário. Pensei inicialmente em utilizar `input()`, mas acabei preferindo `argparse`, já que isso facilita bastante testar diretamente pela CLI.
+
+* Depois de receber os valores via argumentos da linha de comando (como strings), transformei os dois em listas usando `list()`. Isso me ajudaria na validação, na inversão da ordem dos bits e na iteração durante os loops.
+
+* Após isso, fiz uma validação para garantir que os valores fossem compostos apenas por `0` e `1`.
+
+* Depois da validação, parti para uma feature que achei interessante: mostrar também o valor decimal dos binários inseridos. Assim nasceu a função `binary_array_to_decimal`, que percorre os bits e soma `2^index` sempre que encontra um bit igual a `1`.
+
+* Antes de criar a função `binary_sum` (responsável por realizar a soma sem usar operadores aritméticos), percebi a necessidade de garantir que os dois binários possuíssem o mesmo tamanho. Afinal, a lógica da soma depende da comparação entre os bits de cada posição. Assim nasceu a função `make_binary_arrays_has_the_same_length`.
+
+* Durante os testes, precisei corrigir a função `binary_array_to_decimal`, porque ela fazia `.reverse()` no array, mas não revertia novamente antes de sair da função. Inicialmente imaginei que o `reverse()` afetaria apenas o escopo interno da função, mas descobri que ele modifica diretamente a lista original.
+
+* Durante a criação da função `binary_sum`, percebi também que a função de equalização precisava garantir espaço suficiente para possíveis carries finais. Sem isso, somas como:
+
+```text
+111 + 111
+```
+
+poderiam gerar problemas.
+
+Por isso, caso os binários começassem com `1`, adicionei um `0` extra na frente dos dois números para prevenir overflow de tamanho:
+
+```text
+0111 + 0111 = 1110
+```
+
+Assim, tanto os operandos quanto o resultado continuam compatíveis em tamanho.
+
+* A lógica principal por trás da função `binary_sum` foi explicada anteriormente na seção “E como isso é possível?”.
+
+* Um bug lógico importante foi encontrado dentro da função `make_binary_arrays_has_the_same_length`. Ele aparecia quando os dois binários tinham tamanhos diferentes e o maior terminava com bit `1`.
+
+Exemplo:
+
+```text
+Menor: 0101
+Maior: 11011
+```
+
+O problema acontecia porque a lógica responsável por adicionar um `0` extra no início do binário maior não estava revertendo corretamente a lista antes do `append("0")`.
+
+Isso fazia com que:
+
+```text
+11011
+```
+
+se transformasse em:
+
+```text
+110110
+```
+
+quando o correto seria:
+
+```text
+011011
+```
+
+* Outro erro corrigido foi dentro da função `binary_sum`, onde eu acabava comparando o bit atual com `0` (inteiro) ao invés de `"0"` (string), já que os bits estavam armazenados dentro de listas de strings.
 
